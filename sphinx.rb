@@ -4,7 +4,8 @@ class Libstemmer < Formula
   # upstream is constantly changing the tarball,
   # so doing checksum verification here would require
   # constant, rapid updates to this formula.
-  head 'http://snowball.tartarus.org/dist/libstemmer_c.tgz'
+  url 'https://s3-eu-west-1.amazonaws.com/rnaveiras-software/libstemmer_c.tgz'
+  sha1 '6645992e5a5023dfd7eecf99fbcc58ec8b41facf'
   homepage 'http://snowball.tartarus.org/'
 end
 
