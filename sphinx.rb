@@ -14,7 +14,7 @@ class Sphinx < Formula
   homepage 'http://www.sphinxsearch.com'
   sha1 '8c739b96d756a50972c27c7004488b55d7458015'
 
-  depends_on 'apple-gcc42'
+  depends_on 'homebrew/dupes/apple-gcc42'
 
   def install
     lstem = Pathname.pwd+'libstemmer_c'
