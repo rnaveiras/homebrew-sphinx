@@ -1,14 +1,5 @@
 require 'formula'
 
-class Libstemmer < Formula
-  # upstream is constantly changing the tarball,
-  # so doing checksum verification here would require
-  # constant, rapid updates to this formula.
-  url 'https://s3-eu-west-1.amazonaws.com/rnaveiras-software/libstemmer_c.tgz'
-  sha1 '6645992e5a5023dfd7eecf99fbcc58ec8b41facf'
-  homepage 'http://snowball.tartarus.org/'
-end
-
 class Sphinx < Formula
   url 'https://s3-eu-west-1.amazonaws.com/rnaveiras-software/sphinx-0.9.9.tar.gz'
   homepage 'http://www.sphinxsearch.com'
@@ -16,10 +7,35 @@ class Sphinx < Formula
 
   depends_on 'homebrew/dupes/apple-gcc42'
 
+  resource 'stemmer' do
+    url 'https://s3-eu-west-1.amazonaws.com/rnaveiras-software/libstemmer_c.tgz'
+    sha1 '6645992e5a5023dfd7eecf99fbcc58ec8b41facf'
+    # homepage 'http://snowball.tartarus.org/'
+  end
+
+  fails_with :llvm do
+    build 2334
+    cause "ld: rel32 out of range in _GetPrivateProfileString from /usr/lib/libodbc.a(SQLGetPrivateProfileString.o)"
+  end
+
+  fails_with :clang do
+    build 421
+    cause "sphinxexpr.cpp:1802:11: error: use of undeclared identifier 'ExprEval'"
+  end
+
   def install
-    lstem = Pathname.pwd+'libstemmer_c'
-    lstem.mkpath
-    Libstemmer.new.brew { mv Dir['*'], lstem }
+    # setting ad-hoc GCC from apple-gcc42
+    ENV['CC'] = '/usr/local/bin/gcc-4.2'
+    ENV['CXX'] = '/usr/local/bin/g++-4.2'
+    ENV['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
+
+    ENV['CFLAGS']   = '-arch x86_64'
+    ENV['CCFLAGS']  = '-arch x87_64'
+    ENV['CXXFLAGS'] = '-arch x86_64'
+
+    resource('stemmer').stage do
+      system "cp -r . #{buildpath}/libstemmer_c/ "
+    end
 
     args = ["--prefix=#{prefix}",
             "--disable-debug",
@@ -32,9 +48,6 @@ class Sphinx < Formula
 
     # configure script won't auto-select PostgreSQL
     args << "--with-pgsql" if `/usr/bin/which pg_config`.size > 0
-
-    ENV['CC'] = '/usr/local/bin/gcc-4.2'
-    ENV['CXX'] = '/usr/local/bin/g++-4.2'
 
     system "./configure", *args
     system "make install"
