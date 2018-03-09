@@ -9,7 +9,7 @@ class Sphinx < Formula
 
   resource 'stemmer' do
     url 'https://s3-eu-west-1.amazonaws.com/rnaveiras-software/libstemmer_c.tgz'
-    sha1 'b80ed040f0f42945ea056cc7dc37fc493afd278ff4215c42d67fbbc7f8bde172'
+    sha256 'b80ed040f0f42945ea056cc7dc37fc493afd278ff4215c42d67fbbc7f8bde172'
     # homepage 'http://snowball.tartarus.org/'
   end
 
